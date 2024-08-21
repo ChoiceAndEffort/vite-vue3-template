@@ -1,29 +1,37 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "moduleResolution": "node",
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "strict": true,
-    "sourceMap": true,
-    "jsx": "preserve",
-    "esModuleInterop": true,
-    "lib": ["esnext", "dom"],
 
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    },
+    "jsx": "preserve",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "types": ["node", "unplugin-vue-define-options"]
+    "types": ["node", "unplugin-vue-define-options"],
+    "baseUrl": ".",
+    "paths": { "@/*": ["src/*"] }
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.d.ts",
+    "src/**/*",
     "src/**/*.tsx",
-    "src/**/*.vue",
-    "type-css.d.ts"
+    "/src/**/*.vue",
+    "src/*.ts",
+    "src/*.d.ts",
+    "src/*.tsx",
+    "src/*.vue",
+    "type-css.d.ts",
+    "public/jQueryGantt"
   ],
+  "references": [{ "path": "./tsconfig.node.json" }],
+
   "exclude": ["node_modules", "apps/**/node_modules", "node_modules"]
 }

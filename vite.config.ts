@@ -2,7 +2,7 @@
  * @Author: lg
  * @Date: 2024-05-10 16:09:19
  * @LastEditors: lg
- * @LastEditTime: 2024-05-16 17:48:10
+ * @LastEditTime: 2024-05-16 17:24:05
  * @Description:
  * @FilePath: \vite-vue3-template\vite.config.ts
  */
@@ -17,20 +17,45 @@ import viteCompression from 'vite-plugin-compression';
 import { autoComplete, Plugin as importToCDN } from 'vite-plugin-cdn-import';
 
 // import AutoImport from 'unplugin-auto-import/vite';
-// import Components from 'unplugin-vue-components/vite';
-// import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
+import Components from 'unplugin-vue-components/vite';
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 
 // import ElementPlus from 'unplugin-element-plus/vite'
 
 // 图片压缩
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
-import svgo from 'svgo';
+import svgo from 'svgo'; // 引入 svgo
 
 //打包分析
-// import { visualizer } from 'rollup-plugin-visualizer';
+import { visualizer } from 'rollup-plugin-visualizer';
+
+//使用这个引入CDN
+import externalGlobals from 'rollup-plugin-external-globals';
+//并在index.html中生成对应的CDN引入
+import { createHtmlPlugin } from 'vite-plugin-html';
+const cdn = {
+  css: [],
+  js: [
+    'https://gggj-fe.oss-cn-hangzhou.aliyuncs.com/saas-pc/vue.global.js',
+    'https://gggj-fe.oss-cn-hangzhou.aliyuncs.com/saas-pc/vue-router.global.js',
+    'https://gggj-fe.oss-cn-hangzhou.aliyuncs.com/saas-pc/vue-demi0.14.7.iife.min.js',
+    'https://gggj-fe.oss-cn-hangzhou.aliyuncs.com/saas-pc/pinia2.1.7.iife.prod.min.js',
+    'https://gggj-fe.oss-cn-hangzhou.aliyuncs.com/saas-pc/vue-i18n.global.js',
+    'https://cdn.bootcdn.net/ajax/libs/element-plus/2.7.2/index.full.js'
+  ]
+};
+
+const externalGlobalsObj = {
+  vue: 'Vue',
+  'vue-demi': 'VueDemi',
+  'vue-router': 'VueRouter',
+  pinia: 'Pinia',
+  'vue-i18n': 'VueI18n',
+  'element-plus': 'ElementPlus'
+};
 
 //配置环境
-const PRODUCTION_ENV: Array<string> = ['uat', 'prod'];
+const PRODUCTION_ENV: Array<string> = ['sit', 'uat', 'prod'];
 
 export default ({ mode, command }) => {
   const env = loadEnv(mode, process.cwd());
@@ -74,7 +99,7 @@ export default ({ mode, command }) => {
           entryFileNames: 'static/assets/js/[name]-[hash].js', // 包的入口文件名称
           assetFileNames: 'static/assets/[ext]/[name]-[hash].[ext]' // 资源文件像 字体，图片等
         },
-        external: ['vue']
+        external: Object.keys(externalGlobalsObj),//排除CDN引入的资源打包
       }
     },
     define: {
@@ -89,7 +114,10 @@ export default ({ mode, command }) => {
     css: {
       preprocessorOptions: {
         scss: {
-          additionalData: `@use "@/styles/utils.scss" as *;` //引入全局变量文件(这里不能引入styles下的index.scss样式,否则会被重复打包)
+          // additionalData: `@use "@/styles/element/index.scss" as *;`,
+          additionalData: `@use "@/styles/utils.scss" as *;`
+          // additionalData: `@import "@/styles/utils.scss";` //引入全局变量文件
+          // additionalData: `@use "@/styles/index.scss" as *;`
         }
       }
     },
@@ -102,57 +130,68 @@ export default ({ mode, command }) => {
       //   resolvers: [ElementPlusResolver()],
       // }),
 
-      // Components({
-      //   // allow auto load markdown components under `./src/components/`
-      //   extensions: ['vue', 'md'],
-      //   // allow auto import and register components used in markdown
-      //   include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
-      //   resolvers: [
-      //     ElementPlusResolver({
-      //       importStyle: 'sass'
-      //     })
-      //   ],
-      //   dts: 'src/components.d.ts'
-      // }),
-      // ElementPlus({
-      //   useSource: true,
-      // }),
-      importToCDN({
-        modules: [
-          {
-            name: 'vue',
-            var: 'Vue',
-            path: 'https://gggj-fe.oss-cn-hangzhou.aliyuncs.com/saas-pc/vue.global.js'
-          },
-          {
-            name: 'vue-router',
-            var: 'VueRouter',
-            path: 'https://gggj-fe.oss-cn-hangzhou.aliyuncs.com/saas-pc/vue-router.global.js'
-          },
-          {
-            name: 'vue-demi',
-            var: 'VueDemi',
-            path: `https://gggj-fe.oss-cn-hangzhou.aliyuncs.com/saas-pc/vue-demi0.14.7.iife.min.js`
-          },
-          {
-            name: 'pinia',
-            var: 'Pinia',
-            path: 'https://gggj-fe.oss-cn-hangzhou.aliyuncs.com/saas-pc/pinia2.1.7.iife.prod.min.js'
-          },
-
-          {
-            name: 'vue-i18n',
-            var: 'VueI18n',
-            path: 'https://gggj-fe.oss-cn-hangzhou.aliyuncs.com/saas-pc/vue-i18n.global.js'
-          },
-          {
-            name: 'element-plus',
-            var: 'ElementPlus',
-            path: `https://cdn.bootcdn.net/ajax/libs/element-plus/2.7.2/index.full.js`
-            // css: 'https://cdn.bootcdn.net/ajax/libs/element-plus/2.7.2/index.css' //这里修改了自定义命名空间,所以样式不能CDN引入
-          }
+      Components({
+        // allow auto load markdown components under `./src/components/`
+        // extensions: ['vue', 'md'],
+        // allow auto import and register components used in markdown
+        // include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
+        resolvers: [
+          ElementPlusResolver({
+            importStyle: 'sass'
+          })
         ]
+        // dts: 'src/components.d.ts'
       }),
+      createHtmlPlugin({
+        inject: {
+          data: {
+            cdnCss: PRODUCTION_ENV.includes(VITE_APP_MODE) ? cdn.css : [],
+            cdnJs: PRODUCTION_ENV.includes(VITE_APP_MODE) ? cdn.js : []
+          }
+        }
+      }),
+
+      {
+        ...externalGlobals(externalGlobalsObj),
+        enforce: 'post',
+        apply: 'build'
+      },
+      // importToCDN({
+      //   modules: [
+      //     {
+      //       name: 'vue',
+      //       var: 'Vue',
+      //       path: 'https://gggj-fe.oss-cn-hangzhou.aliyuncs.com/saas-pc/vue.global.js'
+      //     },
+      //     {
+      //       name: 'vue-router',
+      //       var: 'VueRouter',
+      //       path: 'https://gggj-fe.oss-cn-hangzhou.aliyuncs.com/saas-pc/vue-router.global.js'
+      //     },
+      //     {
+      //       name: 'vue-demi',
+      //       var: 'VueDemi',
+      //       path: `https://gggj-fe.oss-cn-hangzhou.aliyuncs.com/saas-pc/vue-demi0.14.7.iife.min.js`
+      //     },
+      //     {
+      //       name: 'pinia',
+      //       var: 'Pinia',
+      //       path: 'https://gggj-fe.oss-cn-hangzhou.aliyuncs.com/saas-pc/pinia2.1.7.iife.prod.min.js'
+      //     },
+
+      //     {
+      //       name: 'vue-i18n',
+      //       var: 'VueI18n',
+      //       path: 'https://gggj-fe.oss-cn-hangzhou.aliyuncs.com/saas-pc/vue-i18n.global.js'
+      //     },
+      //     {
+      //       name: 'element-plus',
+      //       var: 'ElementPlus',
+      //       path: `https://cdn.bootcdn.net/ajax/libs/element-plus/2.7.2/index.full.js`
+      //       // css: 'https://cdn.bootcdn.net/ajax/libs/element-plus/2.7.2/index.css' //这里修改了自定义命名空间,所以样式不能CDN引入
+      //     }
+      //   ]
+      // }),
       // 图片资源压缩
       ViteImageOptimizer({
         webp: {
@@ -170,13 +209,13 @@ export default ({ mode, command }) => {
         algorithm: 'gzip', // 压缩方式
         ext: '.gz', // 后缀名
         deleteOriginFile: false // 压缩后是否删除压缩源文件
+      }),
+      visualizer({
+        // open: true, // 注意这里要设置为true，否则无效，如果存在本地服务端口，将在打包后自动展示
+        // gzipSize: true,
+        // file: 'stats.html', //分析图生成的文件名
+        // brotliSize: true
       })
-      // visualizer({
-      //   open: true, // 注意这里要设置为true，否则无效，如果存在本地服务端口，将在打包后自动展示
-      //   gzipSize: true,
-      //   file: 'stats.html', //分析图生成的文件名
-      //   brotliSize: true
-      // })
     ]
   });
 };

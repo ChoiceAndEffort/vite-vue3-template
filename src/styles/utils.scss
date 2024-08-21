@@ -1,5 +1,8 @@
 //使用scss的math函数，https://sass-lang.com/documentation/breaking-changes/slash-div
 
+@forward "element-plus/theme-chalk/src/mixins/config.scss" with (
+  $namespace: "pb"
+);
 
 @use 'sass:math';
 

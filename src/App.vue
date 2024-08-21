@@ -3,12 +3,11 @@
  * @Date: 2024-05-10 16:09:19
  * @LastEditors: lg
  * @LastEditTime: 2024-05-14 10:57:54
- * @Description:
+ * @Description: 
  * @FilePath: \vite-vue3-template\src\App.vue
 -->
 <template>
-  <!-- namespace="pb" -->
-  <el-config-provider >
+  <el-config-provider namespace="pb">
     <router-view></router-view>
   </el-config-provider>
 </template>

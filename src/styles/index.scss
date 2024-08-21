@@ -1,10 +1,7 @@
 // 自定义命名前缀
-// @forward 'element-plus/theme-chalk/src/mixins/config.scss' with (
-//   $namespace: 'pb' // 自己需要的前缀
+// @forward 'element-plus/theme-chalk/src/mixins/config.scss'with ($namespace: 'pb' // 自己需要的前缀
 // );
-
+//重置样式
 @import './initial.scss';
 
-
-//这里是引入element-plus自定义样是[这个比较重要,上边的修改命名前缀,也是这里引入的才生效,这个是来源源码的逻辑]
-@import 'element-plus/theme-chalk/src/index.scss';
+// @import 'element-plus/theme-chalk/src/index.scss';

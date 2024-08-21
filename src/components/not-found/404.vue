@@ -2,7 +2,7 @@
  * @Author: lg
  * @Date: 2023-08-18 16:39:42
  * @LastEditors: lg
- * @LastEditTime: 2024-05-20 17:16:32
+ * @LastEditTime: 2024-05-16 10:10:59
  * @Description:
  * @FilePath: \vite-vue3-template\src\components\not-found\404.vue
 -->
@@ -14,7 +14,7 @@
 
 <script lang="ts" setup>
 const imgUrl404 =
-  'https://gggj-fe.oss-cn-hangzhou.aliyuncs.com/industrial-internet/404.webp';
+  'https://gggj-fe.oss-cn-hangzhou.aliyuncs.com/industrial-internet/4041.webp';
 </script>
 <style scoped lang="scss">
 $img-404-Width: 462px;
