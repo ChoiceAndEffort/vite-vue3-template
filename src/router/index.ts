@@ -2,32 +2,26 @@
  * @Author: lg
  * @Date: 2023-06-09 18:10:30
  * @LastEditors: lg
- * @LastEditTime: 2024-08-02 16:54:30
+ * @LastEditTime: 2024-07-02 18:04:19
  * @Description:
  * @FilePath: \vite-vue3-template\src\router\index.ts
  */
 // https://blog.csdn.net/m0_52518047/article/details/128332994
 import { createRouter, RouteRecordRaw, createWebHistory } from 'vue-router';
 import type { Router } from 'vue-router';
-import Layout from '@/components/layout/major/index.vue';
+
 const publicRoutes = [
   {
     path: '/',
-    redirect: '/ui'
-  },
-  {
-    path: '/ui',
-    name: 'layout',
-    component: Layout,
-    children: []
+    redirect: '/test-lg'
   },
   {
     path: '/test-lg',
     component: () => import('@/views/test-lg/major/index.vue')
   },
   {
-    path: '/test-role',
-    component: () => import('@/views/test-role/major/index.vue')
+    path: '/test',
+    component: () => import('@/views/test/major/index.vue')
   },
   {
     path: '/:catchAll(.*)', //404页面
